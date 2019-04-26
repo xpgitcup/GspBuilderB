@@ -1,0 +1,26 @@
+plugins {
+    id 'groovy'
+    id 'java'
+}
+
+group 'cn.edu.cup'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }  //增加阿里云镜像, 李晓平
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    //增加对jxl的支持
+    //compile "org.grails.plugins:jxl:0.54" //--这个不行了
+    compile "net.sourceforge.jexcelapi:jxl:2.6.12"
+
+    //阿里巴巴的JSON
+    // https://mvnrepository.com/artifact/com.alibaba/fastjson
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.49'
+}
