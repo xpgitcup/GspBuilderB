@@ -25,9 +25,11 @@ class CommonFrame {
 
     def document
     def status
-    def console
+    def gspSource
     def mainTabs
     def statusPanel
+    def tabNames
+    def tabFlags
 
     /*
     * 打开文件
@@ -91,6 +93,14 @@ class CommonFrame {
             status.text = actionName
         }
 
+        switch ("${evt.source.name}") {
+            case "数据输入":
+                println(tabNames.text)
+                gspSource.text = document.createGspText(tabNames.text, tabFlags.text)
+                break
+
+        }
+
         if (document.guidStrings.indexOf(actionName) > 0) {
             //属于预定义的操作
             //根据事件的名称，来决定如何处理事件
@@ -129,6 +139,7 @@ class CommonFrame {
         swing.panel(layout: new BorderLayout(), constraints: BorderLayout.NORTH) {
             toolBar(constraints: BorderLayout.NORTH) {
                 label(text: "操作流程：")
+                // 这里是文档中定义的操作菜单
                 document.guidStrings.each { e ->
                     button(text: e, actionPerformed: { evt -> commonAction(evt) })
                     label(text: "->")
@@ -136,6 +147,11 @@ class CommonFrame {
                 separator()
                 label(text: "当前操作:")
                 status = label(text: "")
+                label(text: "标题,json格式输入")
+                tabNames = textField(text: "")
+                label(text: "属性（是否树形结构）,json格式输入")
+                tabFlags = textField(text: "")
+                button(text: "确定", actionPerformed: { evt -> commonAction(evt) }, name:"数据输入")
             }
         }
     }
@@ -146,7 +162,7 @@ class CommonFrame {
 
     def mainPanel = {
         swing.panel(layout: new GridLayout(1, 1), constraints: BorderLayout.CENTER) {
-            console = textArea()
+            gspSource = textArea()
         }
     }
 
@@ -154,7 +170,7 @@ class CommonFrame {
     def mainTabPanel = {
         mainTabs = swing.tabbedPane(id: "tabs", tabLayoutPolicy: JTabbedPane.SCROLL_TAB_LAYOUT) {
             //主显示区
-            console = textArea(id: 'console')
+            gspSource = textArea(id: 'gspSource')
             //目标
             scrollPane(id: 'statusPanel') {
                 statusPanel = textArea()
