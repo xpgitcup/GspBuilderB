@@ -11,6 +11,5 @@ class Main {
 
         def mainFrame = new CommonFrame(document)//CommonFrame(document)
         mainFrame.run()
-        mainFrame.showStatus()
     }
 }

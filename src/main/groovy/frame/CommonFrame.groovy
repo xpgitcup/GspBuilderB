@@ -7,6 +7,7 @@ import javax.swing.JFrame
 import javax.swing.JTabbedPane
 import javax.swing.UIManager
 import java.awt.BorderLayout
+import java.awt.FlowLayout
 import java.awt.GridLayout
 import java.awt.Toolkit
 import java.awt.event.ActionEvent
@@ -18,8 +19,8 @@ class CommonFrame {
     def toolkit = Toolkit.getDefaultToolkit()
     def screenSize = toolkit.getScreenSize()
 
-    def WIDTH = 1200
-    def HEIGHT = 768
+    def WIDTH = 800
+    def HEIGHT = 600
     int X = (screenSize.width - WIDTH) / 2
     int Y = (screenSize.height - HEIGHT) / 2
 
@@ -32,56 +33,6 @@ class CommonFrame {
     def tabFlags
 
     /*
-    * 打开文件
-    * */
-
-    def openFile(extName) {
-        def o = new JFileChooser()
-        o.setFileSelectionMode(JFileChooser.FILES_ONLY)
-
-        o.setFileFilter(new javax.swing.filechooser.FileFilter() {
-
-            @Override
-            boolean accept(File afile) {
-                if (afile.getName().endsWith(extName)) {
-                    return true
-                } else {
-                    return false
-                }
-            }
-
-            @Override
-            String getDescription() {
-                return "word 文档"
-            }
-        })
-
-        def ok = o.showOpenDialog(null)
-        if (ok == JFileChooser.APPROVE_OPTION) {
-            return o.getSelectedFile()
-        } else {
-            return null
-        }
-
-    }
-
-    /*
-    * 显示程序当前的状态
-    * */
-
-    def showStatus() {
-        //显示结果
-        def tmp = []
-        statusPanel.clear()
-        //document.class.properties.each { e->
-        //document.class.fields.each { e ->
-        document.status.each { e ->
-            tmp.add("${e}\n")
-        }
-        statusPanel.text = "${tmp}"
-    }
-
-    /*
     * 处理用户的操作
     * */
 
@@ -89,35 +40,31 @@ class CommonFrame {
         def actionName = evt.actionCommand
 
         println("通用事件处理：${actionName} -- ${evt}")
-        if (evt.source?.name) {
-            status.text = actionName
-        }
 
+        println("事件来源：${evt.source.name}")
         switch ("${evt.source.name}") {
             case "数据输入":
                 println(tabNames.text)
-                gspSource.text = document.createGspText(tabNames.text, tabFlags.text)
+                document.tabNames = tabNames.text
+                document.tabFlags = tabFlags.text
+                document.useJson = useJson.isSelected()
+                gspSource.text = document.createGspText()
                 break
 
         }
 
-        if (document.guidStrings.indexOf(actionName) > 0) {
-            //属于预定义的操作
-            //根据事件的名称，来决定如何处理事件
-            switch (actionName) {
-                case "源域类":
-                    changeSourceDomain()
-                    break
+        switch (actionName) {
+            case "生成标签页":
+                gspSource.text = document.createTabs(tabsName.text, tabNames.text)
+                break
+            case "生成面板":
+                gspSource.text = document.createPanel(panelTitle.text)
+                break
+            case "生成树形面板":
+                gspSource.text = document.createTreeView(treeTitle.text)
+                break
 
-            }
-        } else {
-            //根据事件的发起者来决定如何处理事件
-            println("source: ${evt.source}")
-            println("sourceName: ${evt.source.name}")
-            processDefinedEvent(evt)
         }
-
-        showStatus()
     }
 
     protected void processDefinedEvent(ActionEvent evt) {
@@ -135,23 +82,34 @@ class CommonFrame {
 
     //------------------------------------------------------------------------------------------------------------------
     //工具栏
+    def tabsName
+    def makeTabsButton
+    def panelTitle
+    def makePanelButton
+    def treeTitle
+    def makeTreeButton
+
     def theToolBar = {
-        swing.panel(layout: new BorderLayout(), constraints: BorderLayout.NORTH) {
+        swing.panel(layout: new BorderLayout(1, 1), constraints: BorderLayout.NORTH) {
             toolBar(constraints: BorderLayout.NORTH) {
-                label(text: "操作流程：")
-                // 这里是文档中定义的操作菜单
-                document.guidStrings.each { e ->
-                    button(text: e, actionPerformed: { evt -> commonAction(evt) })
-                    label(text: "->")
-                }
-                separator()
-                label(text: "当前操作:")
-                status = label(text: "")
-                label(text: "标题,json格式输入")
+                label(text: "标签页设置：")
+                label(text:"总标题")
+                tabsName = textField(text:"")
+                label(text: "标题,逗号分隔")
                 tabNames = textField(text: "")
-                label(text: "属性（是否树形结构）,json格式输入")
-                tabFlags = textField(text: "")
-                button(text: "确定", actionPerformed: { evt -> commonAction(evt) }, name:"数据输入")
+                makeTabsButton = button(text: "生成标签页", actionPerformed: { evt -> commonAction(evt) }, name: "标签页")
+            }
+            toolBar(constraints: BorderLayout.CENTER) {
+                label(text: "面板设置：")
+                label(text: "标题")
+                panelTitle = textField(text: "", actionPerformed: { evt -> commonAction(evt) })
+                makePanelButton = button(text: "生成面板", actionPerformed: { evt -> commonAction(evt) }, name: "面板")
+            }
+            toolBar(constraints: BorderLayout.SOUTH) {
+                label(text: "树形结构：")
+                label(text: "标题")
+                treeTitle = textField(text: "", actionPerformed: { evt -> commonAction(evt) })
+                makeTreeButton = button(text: "生成树形面板", actionPerformed: { evt -> commonAction(evt) }, name: "树形面板")
             }
         }
     }
@@ -166,26 +124,13 @@ class CommonFrame {
         }
     }
 
-
-    def mainTabPanel = {
-        mainTabs = swing.tabbedPane(id: "tabs", tabLayoutPolicy: JTabbedPane.SCROLL_TAB_LAYOUT) {
-            //主显示区
-            gspSource = textArea(id: 'gspSource')
-            //目标
-            scrollPane(id: 'statusPanel') {
-                statusPanel = textArea()
-            }
-        }
-    }
-
     /*
     * 设置界面
     * */
 
     def setupUI() {
         theToolBar()
-        //mainPanel()
-        mainTabPanel()
+        mainPanel()
     }
 
     /*
