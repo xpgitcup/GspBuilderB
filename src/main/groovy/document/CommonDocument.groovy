@@ -19,13 +19,16 @@ class CommonDocument {
         def titles = tabNames.split(",")
 
         def strXml = new StringWriter()
-        MarkupBuilder mb = new groovy.xml.MarkupBuilder(strXml);
+        MarkupBuilder mb = new groovy.xml.MarkupBuilder(strXml)
 
+        mb.setExpandEmptyElements(true) //扩展空的元素
+        mb.setDoubleQuotes(true)    //采用双引号
+        
         mb.div(class: "easyui-tabs", id:"list${tabsName}Div") {
             titles.each { e ->
                 div(title:e, 'data-options':'closeable:false') {
-                    div(id:"list${e}Div"){data("这里是显示数据")}
-                    div(id:"pagination${e}Div", class:"easyui-pagination"){data("???")}
+                    div(id:"list${e}Div")
+                    div(id:"pagination${e}Div", class:"easyui-pagination")
                 }
             }
         }
