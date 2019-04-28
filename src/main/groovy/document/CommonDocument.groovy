@@ -23,13 +23,18 @@ class CommonDocument {
 
         mb.div(class: "easyui-tabs", id:"list${tabsName}Div") {
             titles.each { e ->
-                div(title:e) {
-
+                div(title:e, 'data-options':'closeable:false') {
+                    div(id:"list${e}Div"){data("这里是显示数据")}
+                    div(id:"pagination${e}Div", class:"easyui-pagination"){data("???")}
                 }
             }
         }
 
         return strXml.toString()
+    }
+    
+    def createTabsJS(tabsName, tabNames) {
+        return "JS文件"
     }
 
     def createPanel(panelTitle) {
@@ -43,45 +48,6 @@ class CommonDocument {
         println("${treeTitle}")
         def strXml = new StringWriter()
         MarkupBuilder mb = new groovy.xml.MarkupBuilder(strXml);
-        return strXml.toString()
-    }
-
-    def createGspText() {
-        println("生成gsp文本...")
-
-        println("标题：${tabNames}")
-        println("标志：${tabFlags}")
-        println("是否采用Json：${useJson}")
-
-        def tabs
-        def flags = []
-        if (useJson) {
-            tabs = com.alibaba.fastjson.JSON.parseObject(tabNames)
-            flags = com.alibaba.fastjson.JSON.parseObject(tabFlags)
-        } else {
-            tabs = tabNames.split(",")
-            tabFlags.split(",").each { e ->
-                if (e == 'true') {
-                    flags.add(true)
-                } else {
-                    flags.add(false)
-                }
-            }
-        }
-        println("设置：${tabs}, ${flags}")
-
-
-        if (tabs) {
-            if (tabs.size() < 2) {
-                println("单个Panel ${tabs}")
-                mb.div(class: "easyui-panel") {
-
-                }
-            } else {
-                println("使用tabs ${tabs}")
-            }
-        }
-
         return strXml.toString()
     }
 

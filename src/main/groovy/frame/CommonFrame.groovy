@@ -56,6 +56,7 @@ class CommonFrame {
         switch (actionName) {
             case "生成标签页":
                 gspSource.text = document.createTabs(tabsName.text, tabNames.text)
+                jsPanel.text = document.createTabsJS(tabsName.text, tabNames.text)
                 break
             case "生成面板":
                 gspSource.text = document.createPanel(panelTitle.text)
@@ -123,6 +124,25 @@ class CommonFrame {
             gspSource = textArea()
         }
     }
+    
+    def jsPanel
+    
+    def mainTabPanel = {
+        mainTabs = swing.tabbedPane(id: "tabs", tabLayoutPolicy: JTabbedPane.SCROLL_TAB_LAYOUT) {
+            //主显示区
+            scrollPane(id: 'gspPanel', title: 'gsp') {
+                gspSource = textArea(id: 'console')
+            }
+            //目标
+            scrollPane(id: 'jsPanel', title: 'js') {
+                jsPanel = textArea()
+            }
+            //日志
+            scrollPane(id: 'logPanel', title: '日志') {
+                logPanel = textArea()
+            }
+        }
+    }
 
     /*
     * 设置界面
@@ -130,7 +150,7 @@ class CommonFrame {
 
     def setupUI() {
         theToolBar()
-        mainPanel()
+        mainTabPanel()
     }
 
     /*
