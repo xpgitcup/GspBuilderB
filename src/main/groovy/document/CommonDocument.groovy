@@ -23,19 +23,19 @@ class CommonDocument {
 
         mb.setExpandEmptyElements(true) //扩展空的元素
         mb.setDoubleQuotes(true)    //采用双引号
-        
-        mb.div(class: "easyui-tabs", id:"list${tabsName}Div") {
+
+        mb.div(class: "easyui-tabs", id: "list${tabsName}Div") {
             titles.each { e ->
-                div(title:e, 'data-options':'closeable:false') {
-                    div(id:"list${e}Div")
-                    div(id:"pagination${e}Div", class:"easyui-pagination")
+                div(title: e, 'data-options': 'closeable:false') {
+                    div(id: "list${e}Div")
+                    div(id: "pagination${e}Div", class: "easyui-pagination")
                 }
             }
         }
 
         return strXml.toString()
     }
-    
+
     def createTabsJS(tabsName, tabNames) {
         return "JS文件"
     }
@@ -44,6 +44,13 @@ class CommonDocument {
         println("${panelTitle}")
         def strXml = new StringWriter()
         MarkupBuilder mb = new groovy.xml.MarkupBuilder(strXml);
+        mb.setExpandEmptyElements(true) //扩展空的元素
+        mb.setDoubleQuotes(true)    //采用双引号
+
+        mb.div(class: "easyui-panel") {
+            div(title: panelTitle, id: "list${panelTitle}Div", class: "easyui-panel")
+            div(id: "pagination${panelTitle}Div", class: "easyui-pagination")
+        }
         return strXml.toString()
     }
 
