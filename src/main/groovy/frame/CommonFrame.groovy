@@ -6,11 +6,13 @@ import javax.swing.JFileChooser
 import javax.swing.JFrame
 import javax.swing.JTabbedPane
 import javax.swing.UIManager
+import javax.swing.event.DocumentListener
 import java.awt.BorderLayout
 import java.awt.FlowLayout
 import java.awt.GridLayout
 import java.awt.Toolkit
 import java.awt.event.ActionEvent
+import java.awt.event.FocusListener
 
 class CommonFrame {
     //基础GUI设置
@@ -25,11 +27,8 @@ class CommonFrame {
     int Y = (screenSize.height - HEIGHT) / 2
 
     def document
-    def status
     def gspSource
     def mainTabs
-    def statusPanel
-    def tabNames
     def tabFlags
 
     /*
@@ -56,13 +55,15 @@ class CommonFrame {
         switch (actionName) {
             case "生成标签页":
                 gspSource.text = document.createTabs(tabsName.text, tabNames.text)
-                jsPanel.text = document.createTabsJS(tabsName.text, tabNames.text)
+                jsPanel.text = document.createTabsJS(tabsName.text, tabNames.text, domainName.text)
                 break
             case "生成面板":
                 gspSource.text = document.createPanel(panelTitle.text)
+                jsPanel.text = document.createPanelJS(panelTitle.text)
                 break
             case "生成树形面板":
                 gspSource.text = document.createTreeView(treeTitle.text)
+                jsPanel.text = document.createTreeViewJS(treeTitle.text)
                 break
 
         }
@@ -84,6 +85,9 @@ class CommonFrame {
     //------------------------------------------------------------------------------------------------------------------
     //工具栏
     def tabsName
+    def tabNames
+    def domainName
+    def domaainCheckBox
     def makeTabsButton
     def panelTitle
     def makePanelButton
@@ -94,12 +98,33 @@ class CommonFrame {
         swing.panel(layout: new BorderLayout(1, 1), constraints: BorderLayout.NORTH) {
             toolBar(constraints: BorderLayout.NORTH) {
                 label(text: "标签页设置：")
-                label(text:"总标题")
-                tabsName = textField(text:"")
+                domaainCheckBox = checkBox(text: "域类=控制器", actionPerformed: { evt -> commonAction(evt) })
+                label(text: "域类(首字母大写)")
+                domainName = textField(text: "", actionPerformed: { evt -> commonAction(evt) })
+                label(text: "总标题")
+                tabsName = textField(text: "")
                 label(text: "标题,逗号分隔")
                 tabNames = textField(text: "")
                 makeTabsButton = button(text: "生成标签页", actionPerformed: { evt -> commonAction(evt) }, name: "标签页")
+                //------------------------------------------------------------------------------------------------------
+                domainName.document.addDocumentListener(
+                        [insertUpdate : { e -> println("${e}") },
+                         removeUpdate : { e -> println("${e}") },
+                         changedUpdate: { e -> println e }] as DocumentListener)
+
+                domainName.addFocusListener(
+                        [focusGained: { e -> println "Focus gained: $e.cause" },
+                         focusLost  : { e ->
+                             println "Focus lost: $e.cause"
+                             if (domaainCheckBox.selected) {
+                                 tabsName.text = domainName.text
+                                 tabsName.requestFocus()
+                             }
+                         }] as FocusListener)
+
+                domainName.addCaretListener({ e -> println "Caret event: $e" })
             }
+
             toolBar(constraints: BorderLayout.CENTER) {
                 label(text: "面板设置：")
                 label(text: "标题")
@@ -115,18 +140,18 @@ class CommonFrame {
         }
     }
 
-    /*
-    * 显示区
-    * */
+/*
+* 显示区
+* */
 
     def mainPanel = {
         swing.panel(layout: new GridLayout(1, 1), constraints: BorderLayout.CENTER) {
             gspSource = textArea()
         }
     }
-    
+
     def jsPanel
-    
+
     def mainTabPanel = {
         mainTabs = swing.tabbedPane(id: "tabs", tabLayoutPolicy: JTabbedPane.SCROLL_TAB_LAYOUT) {
             //主显示区
@@ -144,18 +169,18 @@ class CommonFrame {
         }
     }
 
-    /*
-    * 设置界面
-    * */
+/*
+* 设置界面
+* */
 
     def setupUI() {
         theToolBar()
         mainTabPanel()
     }
 
-    /*
-    * 执行--主消息系循环
-    * */
+/*
+* 执行--主消息系循环
+* */
 
     def run() {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
@@ -168,11 +193,12 @@ class CommonFrame {
         frame.setVisible(true)
     }
 
-    /*
-    * 构造函数
-    * */
+/*
+* 构造函数
+* */
 
     public CommonFrame(doc) {
         document = doc
     }
+
 }

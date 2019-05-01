@@ -1,0 +1,37 @@
+//全局变量定义
+var treeView${domainName}Ul;
+
+\$(function () {
+
+    console.info("加载..." + document.title);
+
+    //变量获取
+    treeView${domainName}Ul = \$("#treeView${domainName}Ul");
+
+    treeView${domainName}Ul.tree({
+        url: "operation4${domainName}/getTreeViewData",
+        onSelect: function (node) {
+            console.info("树形结构节点选择：" + node.target.id);
+            sessionStorage.setItem("currentNode" + document.title, node.target.id);
+            treeNodeSelected${domainName}(node);
+        },
+        onLoadSuccess: function () {
+            var cnodeid = readStorage("currentNode" + document.title, 0);
+            console.info("上一次：" + cnodeid);
+            treeView${domainName}Ul.tree("collapseAll");
+            if (cnodeid != 0) {
+                console.info("扩展到：" + cnodeid);
+                var cnode = \$("#" + cnodeid);
+                treeView${domainName}Ul.tree("expandTo", cnode);
+                treeView${domainName}Ul.tree("select", cnode);
+            }
+        }
+    })
+});
+
+/*
+* 节点选择
+* */
+function treeNodeSelected${domainName}(node) {
+    console.info("选择" + node);
+}
