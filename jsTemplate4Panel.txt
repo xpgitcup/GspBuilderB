@@ -9,6 +9,8 @@ var localPageSize${domainName};
     //变量获取
     list${domainName}Div = \$("#list${domainName}Div");
     var localPageSize${domainName} = readLocalStorage("pageSize" + document.title, 10);
+    var cPageNumber = readStorage("currentPage" + document.title, 1);
+    var total = count${domainName}(document.title)
 
     list${domainName}Div.panel({
           href:load${domainName}(document.title, cPageNumber, localPageSize${domainName})
@@ -18,8 +20,6 @@ var localPageSize${domainName};
     * 设置分页参数
     * */
     var pagination${domainName}Div = \$("#pagination${domainName}Div")
-    var cPageNumber = readStorage("currentPage" + document.title, 1);
-    var total = count${domainName}(document.title)
     pagination${domainName}Div.pagination({
         pageSize: localPageSize${domainName},
         total: total,
@@ -50,7 +50,7 @@ function count${domainName}(title) {
 * 数据加载函数
 * */
 function load${domainName}(title, page, pageSize) {
-    console.info(document.title + "+数据加载......" + title + " 第" + page + "页/" + pageSize);
+    console.info("数据加载：" + title + " 第" + page + "页/" + pageSize);
     var append = setupAppendParams${domainName}();
     var params = getParams(page, pageSize);    //getParams必须是放在最最前面！！
     var url = "${controller}/list" + params + "&key=" + title + append;
