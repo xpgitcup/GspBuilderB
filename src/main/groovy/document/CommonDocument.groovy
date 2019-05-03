@@ -27,7 +27,7 @@ class CommonDocument {
         mb.div(class: "easyui-tabs", id: "list${tabsName}Div") {
             titles.each { e ->
                 div(title: e, 'data-options': 'closeable:false') {
-                    div(id: "list${e}Div")
+                    div(id: "list${e}Div", )
                     div(id: "pagination${tabsName}${e}Div", class: "easyui-pagination")
                 }
             }
@@ -47,13 +47,15 @@ class CommonDocument {
         } else {
             controller = "operation4" + domainName
         }
+        def firstTitle = titles[0]
 
         def engine = new groovy.text.SimpleTemplateEngine()
         def template = engine.createTemplate(tempFile.text)
         def jsText = template.make([
                 domainName: tabsName,
                 tabNames: titlesAsJson,
-                controller: controller
+                controller: controller,
+                firstTitle: firstTitle
         ])
 
         return jsText

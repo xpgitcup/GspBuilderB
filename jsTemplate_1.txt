@@ -8,8 +8,7 @@ var localPageSize${domainName};
 
     //变量获取
     list${domainName}Div = \$("#list${domainName}Div");
-    var defaultTab = list${domainName}Div.tabs("tabs")[0].panel("options").title
-    var currentTab = readStorage("current" + document.title, defaultTab);
+    var currentTab = readStorage("current" + document.title, ${domainName}TabNames[0]);
     var localPageSize${domainName} = readLocalStorage("pageSize" + document.title, 10);
     console.info("首次加载..." + currentTab);
 
@@ -29,13 +28,6 @@ var localPageSize${domainName};
     // 打开缺省的标签
     list${domainName}Div.tabs("select", currentTab);
 
-    var list${firstTitle}Div = \$("#list${firstTitle}Div");
-    var cPageNumber = readStorage("currentPage" + document.title + "${firstTitle}", 1);
-    console.info("panel首次加载.....")
-    list${firstTitle}Div.panel({
-        href: load${domainName}("${firstTitle}", cPageNumber, localPageSize${domainName})
-    })
-
     /*
     * 设置分页参数
     * */
@@ -50,7 +42,7 @@ var localPageSize${domainName};
             showPageList: false,
             pageNumber: cPageNumber,
             onSelectPage: function (pageNumber, pageSize) {
-                sessionStorage.setItem("currentPage" + document.title + title, pageNumber);     //记录当前页面
+                sessionStorage.setItem("currentPage" + doument.title + title, pageNumber);     //记录当前页面
                 load${domainName}(title, pageNumber, pageSize);
             }
         })
