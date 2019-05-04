@@ -52,6 +52,7 @@ class CommonDocument {
         def engine = new groovy.text.SimpleTemplateEngine()
         def template = engine.createTemplate(tempFile.text)
         def jsText = template.make([
+                tabsName: tabsName,
                 domainName: tabsName,
                 tabNames: titlesAsJson,
                 controller: controller,
