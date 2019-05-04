@@ -58,8 +58,8 @@ class CommonFrame {
                 jsPanel.text = document.createTabsJS(tabsName.text, tabNames.text, domainName.text)
                 break
             case "生成面板":
-                gspSource.text = document.createPanel(panelTitle.text)
-                jsPanel.text = document.createPanelJS(panelTitle.text)
+                gspSource.text = document.createPanel(panelDomain.text, panelTitle.text)
+                jsPanel.text = document.createPanelJS(panelDomain.text, panelTitle.text)
                 break
             case "生成树形面板":
                 gspSource.text = document.createTreeView(treeTitle.text)
@@ -90,6 +90,7 @@ class CommonFrame {
     def domaainCheckBox
     def makeTabsButton
     def panelTitle
+    def panelDomain
     def makePanelButton
     def treeTitle
     def makeTreeButton
@@ -127,6 +128,8 @@ class CommonFrame {
 
             toolBar(constraints: BorderLayout.CENTER) {
                 label(text: "面板设置：")
+                label(text: "域类")
+                panelDomain = textField(text: "", actionPerformed: { evt -> commonAction(evt) })
                 label(text: "标题")
                 panelTitle = textField(text: "", actionPerformed: { evt -> commonAction(evt) })
                 makePanelButton = button(text: "生成面板", actionPerformed: { evt -> commonAction(evt) }, name: "面板")
